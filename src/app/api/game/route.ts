@@ -26,6 +26,9 @@ export async function POST(req: Request, res: Response) {
         type,
       }
     );
+    if(data.length===0){
+      throw new Error("Data is empty");
+    }
     const game = await prisma.game.create({
       data: {
         gameType: type,
@@ -108,7 +111,7 @@ export async function POST(req: Request, res: Response) {
       );
     } else {
       return NextResponse.json(
-        { error: "An unexpected error occurred." },
+        { error: error},
         {
           status: 500,
         }

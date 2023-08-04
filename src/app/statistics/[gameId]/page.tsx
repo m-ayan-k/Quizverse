@@ -46,8 +46,7 @@ const Statistics = async ({ params: { gameId } }: Props) => {
     }, 0);
     accuracy = totalPercentage / game.questions.length;
   }
-  accuracy = Math.round(accuracy * 100) / 100;
-
+  accuracy = Math.round(accuracy * 100) / 100
   return (
     <>
       <div className="p-8 mx-auto max-w-7xl">
@@ -65,7 +64,7 @@ const Statistics = async ({ params: { gameId } }: Props) => {
           <ResultsCard accuracy={accuracy} />
           <AccuracyCard accuracy={accuracy} />
           <TimeTakenCard
-            timeEnded={new Date(game.timeEnded ?? 0)}
+            timeEnded={(game.timeEnded!==null?new Date(game.timeEnded):new Date())}
             timeStarted={new Date(game.timeStarted ?? 0)}
           />
         </div>

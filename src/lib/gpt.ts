@@ -17,7 +17,7 @@ export async function strict_output(
   output_value_only: boolean = false,
   model: string = "gpt-3.5-turbo",
   temperature: number = 1,
-  num_tries: number = 3,
+  num_tries: number = 2,
   verbose: boolean = false
 ): Promise<
   {
@@ -26,8 +26,6 @@ export async function strict_output(
   }[]
 > {
   // if the user input is in a list, we also process the output as a list of json
-  // console.log(user_prompt);
-  let error_global;
   const list_input: boolean = Array.isArray(user_prompt);
   // if the output format contains dynamic elements of < or >, then add to the prompt to handle dynamic elements
   const dynamic_elements: boolean = /<.*?>/.test(JSON.stringify(output_format));
@@ -73,8 +71,10 @@ export async function strict_output(
       response.data.choices[0].message?.content?.replace(/'/g, '"') ?? "";
 
     // ensure that we don't replace away apostrophes in text
+    console.log(res);
     res = res.replace(/(\w)"(\w)/g, "$1'$2");
-
+    console.log(res);
+    console.log(typeof res);
     if (verbose) {
       console.log(
         "System prompt:",
@@ -85,15 +85,12 @@ export async function strict_output(
     }
 
     // try-catch block to ensure output format is adhered to
-
     try {
+      console.log("res",res);
       let output: any = JSON.parse(res);
-      // console.log("res",res);
-      if (list_input) {
-        if (!Array.isArray(output)) {
-          throw new Error("Output format not in a list of json");
-        }
-      } else {
+      console.log("output",output);
+      console.log(typeof output,typeof res,Array.isArray(output),Array.isArray(res));
+      if (!Array.isArray(output)) {
         output = [output];
       }
       
@@ -138,15 +135,14 @@ export async function strict_output(
           }
         }
       }
-      // console.log((list_input ? output : output[0]));
+
       return list_input ? output : output[0];
     } catch (e) {
       error_msg = `\n\nResult: ${res}\n\nError message: ${e}`;
-      error_global=e;
       console.log("An exception occurred:", e);
-      console.log("Current invalid json format:", res);
+      // console.log("Current invalid json format:", res);
     }
   }
-  alert(`Question not found \\n${error_global}\\n Enter any other topics in few minutes`);
+
   return [];
 }
