@@ -8,7 +8,69 @@ const openai = new OpenAIApi(configuration);
 interface OutputFormat {
   [key: string]: string | string[] | OutputFormat;
 }
+const make_it_better2=(res:string):string =>{
+  let idx:number[]=[];
+  for(let i=0;i<res.length;i++){
+    if(res[i]==':'){
+      idx.push(i);
+    }
+  }
+  let ans:string="";
+  for(let i=0,j=0;i<res.length;){
+    if(idx[j]===i){
+      ans=ans+res[i]+res[i+1]+res[i+2];
+      for(let k=i+3;k<res.length;k++){
+        i=k;
+        if(res[k]==='"' && (res[k+1]==='}' || res[k+1]===',')){
+          break;
+        }
 
+        if(res[k]!=='"'){
+          ans+=res[k];
+        }
+      }
+      ans+=res[i];
+      i++;
+      j++;
+    }
+    else{
+      ans+=res[i];
+      i++;
+    }
+  }
+  return ans;
+}
+const make_it_better=(res:string): string =>{
+  if(res[0]!='['){
+    res='['+res+']';
+  }
+  let ans:string="";
+  for(let i=0;i<res.length;i++){
+    ans+=res[i];
+    if(i!==res.length-2 && res[i]==='}' && res[i+1]!==','){
+      ans+=',';
+    }
+  }
+  res=ans;
+  ans="";
+  for(let i=0;i<res.length;){
+    if(res[i]!=='{'){
+      ans+=res[i];
+      i++;
+    }
+    else{
+      let temp:string="";
+      for(let j=i;j<res.length &&  res[j]!=='}';j++){
+        temp+=res[j];
+        i=j;
+      }
+      temp+='}';
+      i+=2;
+      ans+=make_it_better2(temp);
+    }
+  }
+  return ans;
+}
 export async function strict_output(
   system_prompt: string,
   user_prompt: string | string[],
@@ -16,7 +78,7 @@ export async function strict_output(
   default_category: string = "",
   output_value_only: boolean = false,
   model: string = "gpt-3.5-turbo",
-  temperature: number = 1,
+  temperature: number = 0.7,
   num_tries: number = 2,
   verbose: boolean = false
 ): Promise<
@@ -69,12 +131,9 @@ export async function strict_output(
 
     let res: string =
       response.data.choices[0].message?.content?.replace(/'/g, '"') ?? "";
-
     // ensure that we don't replace away apostrophes in text
-    console.log(res);
     res = res.replace(/(\w)"(\w)/g, "$1'$2");
     console.log(res);
-    console.log(typeof res);
     if (verbose) {
       console.log(
         "System prompt:",
@@ -83,18 +142,17 @@ export async function strict_output(
       console.log("\nUser prompt:", user_prompt);
       console.log("\nGPT response:", res);
     }
-
+    res=make_it_better(res);
+    // console.log(res);
     // try-catch block to ensure output format is adhered to
     try {
-      console.log("res",res);
       let output: any = JSON.parse(res);
-      console.log("output",output);
-      console.log(typeof output,typeof res,Array.isArray(output),Array.isArray(res));
       if (!Array.isArray(output)) {
         output = [output];
       }
-      
-
+      // if(output.length!==user_prompt.length){
+      //   throw new Error(`${user_prompt.length} question were asked but ${output.length} question were provided`);
+      // }
       // check for each element in the output_list, the format is correctly adhered to
       for (let index = 0; index < output.length; index++) {
         for (const key in output_format) {

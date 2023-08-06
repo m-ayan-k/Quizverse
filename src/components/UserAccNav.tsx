@@ -48,7 +48,7 @@ const UserAccNav = ({user}: Props) => {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/">Meow</Link>
+          <Link href="/">Dashboard</Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
