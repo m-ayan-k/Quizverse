@@ -1,6 +1,6 @@
-# [LIVE SITE](https://quiz-verse.vercel.app/)
+## Hey,If u create quiz and not directed to quiz page, please change your quiz topics to simple words like(moon, earth, your country name) not like (integration, calculus).Try atleast for 4-5 time with different topics.
 
-### Hey,If u create quiz and not directed to quiz page, please change your quiz topics to simple words like(moon, earth, your country name) not like (integration, calculus). 
+# [LIVE SITE](https://quiz-verse.vercel.app/)
 
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
