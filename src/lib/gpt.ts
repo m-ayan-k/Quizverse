@@ -11,7 +11,7 @@ interface OutputFormat {
 const make_it_better2=(res:string):string =>{
   let idx:number[]=[];
   for(let i=0;i<res.length;i++){
-    if(res[i]==':'){
+    if(res[i]===':'){
       idx.push(i);
     }
   }
@@ -46,6 +46,16 @@ const make_it_better=(res:string): string =>{
   }
   let ans:string="";
   for(let i=0;i<res.length;i++){
+    if(i+1<res.length && res[i]===' ' && res[i+1]===' ' ){
+
+    }
+    else{
+      ans+=res[i];
+    }
+  }
+  res=ans;
+  ans="";
+  for(let i=0;i<res.length;i++){
     ans+=res[i];
     if(i!==res.length-2 && res[i]==='}' && res[i+1]!==','){
       ans+=',';
@@ -54,13 +64,17 @@ const make_it_better=(res:string): string =>{
   res=ans;
   ans="";
   for(let i=0;i<res.length;){
-    if(res[i]!=='{'){
+    if(res[i]!=='{' && res[i]!==' '){
       ans+=res[i];
       i++;
     }
     else{
       let temp:string="";
-      for(let j=i;j<res.length &&  res[j]!=='}';j++){
+      let j=i;
+      while(res[j]===' '){
+        j++;
+      }
+      for(j=i;j<res.length &&  res[j]!=='}';j++){
         temp+=res[j];
         i=j;
       }
