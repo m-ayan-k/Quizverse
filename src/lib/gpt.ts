@@ -142,17 +142,22 @@ export async function strict_output(
       console.log("\nUser prompt:", user_prompt);
       console.log("\nGPT response:", res);
     }
-    res=make_it_better(res);
-    // console.log(res);
+
+    try{
+      let dummy=JSON.parse(res);
+    }catch(e){
+      res=make_it_better(res);
+      console.log("after formating",res);
+    } 
     // try-catch block to ensure output format is adhered to
     try {
       let output: any = JSON.parse(res);
       if (!Array.isArray(output)) {
         output = [output];
       }
-      // if(output.length!==user_prompt.length){
-      //   throw new Error(`${user_prompt.length} question were asked but ${output.length} question were provided`);
-      // }
+      if(output.length!==user_prompt.length){
+        throw new Error(`${user_prompt.length} question were asked but ${output.length} question were provided`);
+      }
       // check for each element in the output_list, the format is correctly adhered to
       for (let index = 0; index < output.length; index++) {
         for (const key in output_format) {

@@ -40,6 +40,7 @@
     "react-d3-cloud": "^1.0.6",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.2",
+    "reactstrap": "^9.2.0",
     "string-similarity": "^4.0.4",
     "string-similarity-js": "^2.1.4",
     "tailwind-merge": "^1.14.0",
