@@ -169,7 +169,7 @@ export async function strict_output(
       if (!Array.isArray(output)) {
         output = [output];
       }
-      if(output.length!==user_prompt.length){
+      if(i!==num_tries-1 &&  numoutput.length!==user_prompt.length){
         throw new Error(`${user_prompt.length} question were asked but ${output.length} question were provided`);
       }
       // check for each element in the output_list, the format is correctly adhered to

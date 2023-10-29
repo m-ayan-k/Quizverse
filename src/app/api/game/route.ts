@@ -111,7 +111,7 @@ export async function POST(req: Request, res: Response) {
       );
     } else {
       return NextResponse.json(
-        { error: error},
+        { error: error.issues},
         {
           status: 500,
         }
