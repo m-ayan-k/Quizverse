@@ -93,7 +93,7 @@ export async function strict_output(
   output_value_only: boolean = false,
   model: string = "gpt-3.5-turbo",
   temperature: number = 0.7,
-  num_tries: number = 2,
+  num_tries: number = 3,
   verbose: boolean = false
 ): Promise<
   {
@@ -127,7 +127,7 @@ export async function strict_output(
 
     // if input is in a list format, ask it to generate json in a list
     if (list_input) {
-      output_format_prompt += `\nGenerate a list of json, one json for each input element.`;
+      output_format_prompt += `\nGenerate a list of json, one json for each input element, and don't add unnecessary sentence at end`;
     }
 
     // Use OpenAI to get a response
@@ -147,8 +147,8 @@ export async function strict_output(
       response.data.choices[0].message?.content?.replace(/'/g, '"') ?? "";
     // ensure that we don't replace away apostrophes in text
     res = res.replace(/(\w)"(\w)/g, "$1'$2");
-    console.log(res);
-    if (verbose) {
+    // console.log(res);
+    if (true) {
       console.log(
         "System prompt:",
         system_prompt + output_format_prompt + error_msg
@@ -157,19 +157,30 @@ export async function strict_output(
       console.log("\nGPT response:", res);
     }
 
-    try{
-      let dummy=JSON.parse(res);
-    }catch(e){
-      res=make_it_better(res);
-      console.log("after formating",res);
-    } 
+    // try{
+    //   let dummy=JSON.parse(res);
+    // }catch(e){
+    //   res=make_it_better(res);
+    //   console.log("after formating",res);
+    // } 
     // try-catch block to ensure output format is adhered to
     try {
-      let output: any = JSON.parse(res);
-      if (!Array.isArray(output)) {
+      let output:any;
+      try{
+        output= JSON.parse(res);
+      }
+      catch(e){
+        throw new Error("Output format is not in a list of json");
+      }
+      output= JSON.parse(res);
+      if (list_input) {
+        if (!Array.isArray(output)) {
+          throw new Error("Output format is not in a list");
+        }
+      } else {
         output = [output];
       }
-      if(i!==num_tries-1 &&  numoutput.length!==user_prompt.length){
+      if(i!==num_tries-1 &&  output.length!==user_prompt.length){
         throw new Error(`${user_prompt.length} question were asked but ${output.length} question were provided`);
       }
       // check for each element in the output_list, the format is correctly adhered to
